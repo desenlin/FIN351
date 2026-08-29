@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive FIN 351 learning tool for residential and production bid-rent curves, open and closed cities, and building choice.">
+  <title>Bid-Rent Curves and Urban Land Use | FIN 351</title>
+  <style>
+    :root {
+      --navy: #00274c;
+      --navy-2: #0b3a67;
+      --orange: #f58220;
+      --orange-dark: #c85f05;
+      --ink: #172033;
+      --muted: #5c677d;
+      --line: #d8dee9;
+      --soft: #f3f6fa;
+      --white: #ffffff;
+      --blue: #2878b5;
+      --red: #c44235;
+      --green: #16745b;
+      --purple: #7652a5;
+      --gold: #a76d00;
+      --shadow: 0 12px 30px rgba(0, 39, 76, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f7;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid rgba(245, 130, 32, 0.45);
+      outline-offset: 2px;
+    }
+    .topbar { height: 8px; background: var(--orange); }
+    .hero {
+      color: var(--white);
+      background:
+        radial-gradient(circle at 91% 12%, rgba(245, 130, 32, 0.22), transparent 30%),
+        linear-gradient(135deg, var(--navy), var(--navy-2));
+    }
+    .hero-inner, main, footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .hero-inner { padding: 42px 0 46px; }
+    .course-tag {
+      display: inline-flex;
+      margin-bottom: 14px;
+      padding: 6px 11px;
+      color: var(--navy);
+      background: var(--orange);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 940px;
+      margin-bottom: 12px;
+      font-size: clamp(2rem, 4.6vw, 3.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+    .hero p {
+      max-width: 880px;
+      margin-bottom: 8px;
+      color: #e4edf6;
+      font-size: clamp(1rem, 2vw, 1.18rem);
+    }
+    .creator { color: #f8c99f !important; font-size: 0.9rem !important; font-weight: 700; }
+    .jump-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+    .jump-nav a {
+      padding: 8px 11px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+    .jump-nav a:hover { background: rgba(255, 255, 255, 0.16); }
+    main { display: grid; gap: 22px; padding: 28px 0 46px; }
+    .card {
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid rgba(0, 39, 76, 0.10);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 18px;
+    }
+    .card-body { padding: 24px; }
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .section-heading h2 {
+      margin-bottom: 4px;
+      color: var(--navy);
+      font-size: 1.42rem;
+      line-height: 1.25;
+    }
+    .section-heading p { max-width: 780px; margin-bottom: 0; color: var(--muted); font-size: 0.94rem; }
+    .eyebrow {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--orange-dark);
+      font-size: 0.75rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .concept-grid, .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.42fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .concept-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .concept-panel {
+      min-height: 100%;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--orange);
+      border-radius: 11px;
+    }
+    .concept-panel h3 { margin-bottom: 6px; color: var(--navy); font-size: 0.98rem; }
+    .concept-panel p { margin-bottom: 0; color: var(--muted); font-size: 0.85rem; }
+    .formula {
+      margin: 0 0 17px;
+      padding: 15px 17px;
+      color: var(--white);
+      background: var(--navy);
+      border-radius: 10px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(0.98rem, 2vw, 1.17rem);
+    }
+    .formula small { display: block; margin-top: 5px; color: #dce9f5; font-family: Inter, sans-serif; font-size: 0.74rem; }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      margin-bottom: 15px;
+    }
+    .control {
+      min-width: 0;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    .control.core { border-top: 4px solid var(--orange); }
+    .control label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      color: var(--navy);
+      font-size: 0.79rem;
+      font-weight: 780;
+    }
+    .control output { color: var(--orange-dark); white-space: nowrap; }
+    .control-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 78px;
+      gap: 8px;
+      align-items: center;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--orange); cursor: pointer; }
+    input[type="number"] {
+      width: 100%;
+      min-height: 34px;
+      padding: 5px 7px;
+      color: var(--ink);
+      background: var(--white);
+      border: 1px solid #aeb9c8;
+      border-radius: 7px;
+      text-align: right;
+      font-size: 0.8rem;
+      font-weight: 650;
+    }
+    details {
+      margin-bottom: 15px;
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    summary { padding: 11px 13px; color: var(--navy); cursor: pointer; font-size: 0.86rem; font-weight: 800; }
+    details .controls { margin: 0; padding: 3px 13px 13px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+    .action-button {
+      min-height: 38px;
+      padding: 8px 13px;
+      color: var(--navy);
+      background: var(--soft);
+      border: 1px solid #c9d2df;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 780;
+    }
+    .action-button:hover { background: #e6edf5; }
+    .action-button.primary { color: var(--white); background: var(--navy); border-color: var(--navy); }
+    .action-button.primary:hover { background: var(--navy-2); }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 15px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .metric { min-width: 0; padding: 13px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.67rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .metric-value {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--navy);
+      font-size: clamp(1rem, 2vw, 1.32rem);
+      font-weight: 850;
+      line-height: 1.2;
+    }
+    .metric-note { display: block; margin-top: 4px; color: var(--muted); font-size: 0.71rem; }
+    .visual-panel, .table-panel {
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      color: var(--white);
+      background: var(--navy);
+    }
+    .panel-header strong { font-size: 0.92rem; }
+    .panel-header span { color: #dce9f5; font-size: 0.76rem; text-align: right; }
+    .chart-wrap { width: 100%; min-width: 0; overflow-x: auto; }
+    svg { display: block; width: 100%; height: auto; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 14px;
+      padding: 11px 14px 0;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 22px; height: 4px; border-radius: 99px; }
+    .swatch.dashed { height: 0; border-top: 3px dashed currentColor; }
+    .chart-note { margin: 9px 14px 14px; color: var(--muted); font-size: 0.79rem; }
+    .decision {
+      margin-top: 15px;
+      padding: 14px 16px;
+      color: #0d5542;
+      background: #e8f6f1;
+      border: 1px solid #89c8b5;
+      border-radius: 10px;
+      font-size: 0.84rem;
+    }
+    .decision strong { color: var(--navy); }
+    .table-panel { margin-top: 15px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.8rem;
+    }
+    th { color: var(--navy); background: #edf2f7; font-size: 0.68rem; letter-spacing: 0.03em; text-transform: uppercase; }
+    th:first-child, td:first-child { text-align: left; }
+    tbody tr:nth-child(even) { background: #fafbfd; }
+    tbody tr.winner { color: #0d5542; background: #e8f6f1; font-weight: 800; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .takeaways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .takeaway { padding: 17px; background: #f8fafc; border: 1px solid var(--line); border-top: 4px solid var(--orange); border-radius: 10px; }
+    .takeaway h3 { margin-bottom: 7px; color: var(--navy); font-size: 1rem; }
+    .takeaway p { margin-bottom: 0; color: var(--muted); font-size: 0.87rem; }
+    .disclaimer { padding: 18px 20px; color: #5b4300; background: #fff8df; border: 1px solid #e8cf78; border-radius: 11px; font-size: 0.86rem; }
+    footer { padding: 0 0 34px; color: var(--muted); text-align: center; font-size: 0.82rem; }
+
+    @media (max-width: 960px) {
+      .concept-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workspace-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .hero-inner { padding: 34px 0 38px; }
+      .card-body { padding: 18px; }
+      .concept-grid, .controls, .takeaways { grid-template-columns: 1fr; }
+      .section-heading { display: block; }
+      .section-heading .action-button { margin-top: 12px; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:last-child { border-bottom: 0; }
+      .panel-header { align-items: flex-start; flex-direction: column; }
+      .panel-header span { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar"></div>
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="course-tag">FIN 351 · Real Estate Principles</span>
+      <h1>Bid-Rent Curves and Urban Land Use</h1>
+      <p>See how households and firms turn access costs into location bids—and how the highest bid at each location becomes the final land-rent curve.</p>
+      <p class="creator">Created by Desen Lin · California State University, Fullerton</p>
+      <nav class="jump-nav" aria-label="Tool sections">
+        <a href="#households">Two household types</a>
+        <a href="#cities">Closed vs. open city</a>
+        <a href="#production">Production</a>
+        <a href="#building">Which building?</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" aria-labelledby="learning-map-title">
+      <div class="card-body">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Learning map</span>
+            <h2 id="learning-map-title">One economic rule, four applications</h2>
+            <p>Move any slider or use an animation button. The calculations, switching locations, and final envelopes update immediately.</p>
+          </div>
+        </div>
+        <div class="concept-grid">
+          <div class="concept-panel"><h3>1 · Households</h3><p>Higher commuting cost creates a steeper bid curve and a stronger incentive to locate near the CBD.</p></div>
+          <div class="concept-panel"><h3>2 · City system</h3><p>A transport improvement changes central rent in a closed city but population and the boundary in an open city.</p></div>
+          <div class="concept-panel"><h3>3 · Production</h3><p>Revenue net of nonland cost sets the intercept; freight cost sets the slope.</p></div>
+          <div class="concept-panel"><h3>4 · Development</h3><p>The landowner chooses the building that supports the highest bid per hectare at that location.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="households" aria-labelledby="households-title">
+      <div class="card-body">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Residential setting</span>
+            <h2 id="households-title">1. A linear city with two household types</h2>
+            <p>Walkers face a larger opportunity cost per mile than drivers. Competitive bidding sorts the steeper curve closer to the CBD and joins the two curves into one equilibrium envelope.</p>
+          </div>
+          <button class="action-button primary" id="animateHouseholds" type="button">Animate walker speed</button>
+        </div>
+        <div class="workspace-grid">
+          <div>
+            <div class="formula">R<sub>j</sub>(d) = anchor rent − c<sub>j</sub> × distance<small>c<sub>j</sub> = hourly wage ÷ travel speed × 2 trips × workdays</small></div>
+            <div class="controls">
+              <div class="control core">
+                <label for="hhWage">Hourly wage <output id="hhWageOut"></output></label>
+                <div class="control-row"><input id="hhWage" type="range" min="10" max="50" step="1"><input id="hhWageNum" type="number" min="10" max="50" step="1"></div>
+              </div>
+              <div class="control core">
+                <label for="walkerSpeed">Walker speed <output id="walkerSpeedOut"></output></label>
+                <div class="control-row"><input id="walkerSpeed" type="range" min="2" max="8" step="0.1"><input id="walkerSpeedNum" type="number" min="2" max="8" step="0.1"></div>
+              </div>
+              <div class="control">
+                <label for="driverSpeed">Driver speed <output id="driverSpeedOut"></output></label>
+                <div class="control-row"><input id="driverSpeed" type="range" min="10" max="40" step="1"><input id="driverSpeedNum" type="number" min="10" max="40" step="1"></div>
+              </div>
+              <div class="control">
+                <label for="walkerShare">Walker share <output id="walkerShareOut"></output></label>
+                <div class="control-row"><input id="walkerShare" type="range" min="10" max="60" step="0.01"><input id="walkerShareNum" type="number" min="10" max="60" step="0.01"></div>
+              </div>
+            </div>
+            <details>
+              <summary>City-size assumptions</summary>
+              <div class="controls">
+                <div class="control"><label for="householdsTotal">Households <output id="householdsTotalOut"></output></label><div class="control-row"><input id="householdsTotal" type="range" min="160" max="640" step="2"><input id="householdsTotalNum" type="number" min="160" max="640" step="2"></div></div>
+                <div class="control"><label for="lotFrontage">Lot frontage <output id="lotFrontageOut"></output></label><div class="control-row"><input id="lotFrontage" type="range" min="50" max="180" step="5"><input id="lotFrontageNum" type="number" min="50" max="180" step="5"></div></div>
+                <div class="control"><label for="workdays">Workdays/month <output id="workdaysOut"></output></label><div class="control-row"><input id="workdays" type="range" min="10" max="25" step="1"><input id="workdaysNum" type="number" min="10" max="25" step="1"></div></div>
+                <div class="control"><label for="fringeRent">Fringe rent <output id="fringeRentOut"></output></label><div class="control-row"><input id="fringeRent" type="range" min="0" max="100" step="5"><input id="fringeRentNum" type="number" min="0" max="100" step="5"></div></div>
+              </div>
+            </details>
+            <div class="actions"><button class="action-button" id="resetHouseholds" type="button">Reset section</button></div>
+            <div class="metrics">
+              <div class="metric"><span class="metric-label">City boundary</span><span class="metric-value" id="hhBoundary"></span><span class="metric-note">same density on two street sides</span></div>
+              <div class="metric"><span class="metric-label">Type switch</span><span class="metric-value" id="hhSwitch"></span><span class="metric-note">walkers inside, drivers outside</span></div>
+              <div class="metric"><span class="metric-label">CBD bid</span><span class="metric-value" id="hhCbdBid"></span><span class="metric-note">equilibrium envelope</span></div>
+            </div>
+            <div class="decision" id="hhDecision"></div>
+          </div>
+          <div class="visual-panel">
+            <div class="panel-header"><strong>Equilibrium residential bid-rent curve</strong><span>Dashed: individual bids · Solid: winning envelope</span></div>
+            <div class="legend" aria-hidden="true">
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--red)"></span>Walker bid</span>
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--blue)"></span>Driver bid</span>
+              <span class="legend-item"><span class="swatch" style="background:var(--navy)"></span>Final land rent</span>
+            </div>
+            <div class="chart-wrap"><svg id="householdChart" viewBox="0 0 1000 570" role="img" aria-labelledby="householdChartTitle householdChartDesc"></svg></div>
+            <p class="chart-note">The number of each household type determines how much of the city it occupies. Bid curves meet at the sorting boundary so households remain indifferent at the margin.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="cities" aria-labelledby="cities-title">
+      <div class="card-body">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Migration assumption</span>
+            <h2 id="cities-title">2. Closed city versus open city</h2>
+            <p>When travel becomes faster, a closed city keeps its households and boundary fixed. An open city instead holds the CBD bid at the outside-market level and adjusts through migration.</p>
+          </div>
+          <button class="action-button primary" id="animateCities" type="button">Animate improved speed</button>
+        </div>
+        <div class="workspace-grid">
+          <div>
+            <div class="formula">Closed: D fixed ⇒ R(0) changes &nbsp; | &nbsp; Open: R(0) fixed ⇒ D and population change</div>
+            <div class="controls">
+              <div class="control"><label for="cityWage">Hourly wage <output id="cityWageOut"></output></label><div class="control-row"><input id="cityWage" type="range" min="10" max="50" step="1"><input id="cityWageNum" type="number" min="10" max="50" step="1"></div></div>
+              <div class="control"><label for="baseSpeed">Initial speed <output id="baseSpeedOut"></output></label><div class="control-row"><input id="baseSpeed" type="range" min="10" max="30" step="1"><input id="baseSpeedNum" type="number" min="10" max="30" step="1"></div></div>
+              <div class="control core"><label for="improvedSpeed">New speed <output id="improvedSpeedOut"></output></label><div class="control-row"><input id="improvedSpeed" type="range" min="12" max="45" step="1"><input id="improvedSpeedNum" type="number" min="12" max="45" step="1"></div></div>
+              <div class="control"><label for="cityRadius">Initial radius <output id="cityRadiusOut"></output></label><div class="control-row"><input id="cityRadius" type="range" min="1" max="8" step="0.1"><input id="cityRadiusNum" type="number" min="1" max="8" step="0.1"></div></div>
+              <div class="control"><label for="cityWorkdays">Workdays/month <output id="cityWorkdaysOut"></output></label><div class="control-row"><input id="cityWorkdays" type="range" min="10" max="25" step="1"><input id="cityWorkdaysNum" type="number" min="10" max="25" step="1"></div></div>
+              <div class="control"><label for="cityFringe">Fringe rent <output id="cityFringeOut"></output></label><div class="control-row"><input id="cityFringe" type="range" min="0" max="100" step="5"><input id="cityFringeNum" type="number" min="0" max="100" step="5"></div></div>
+            </div>
+            <div class="actions"><button class="action-button" id="resetCities" type="button">Reset section</button></div>
+            <div class="metrics">
+              <div class="metric"><span class="metric-label">Monthly cost/mile</span><span class="metric-value" id="cityCostChange"></span><span class="metric-note">initial → improved</span></div>
+              <div class="metric"><span class="metric-label">Closed-city CBD bid</span><span class="metric-value" id="closedCbd"></span><span class="metric-note">population and radius fixed</span></div>
+              <div class="metric"><span class="metric-label">Open-city radius</span><span class="metric-value" id="openRadius"></span><span class="metric-note" id="openPopulationNote"></span></div>
+            </div>
+            <div class="decision" id="cityDecision"></div>
+          </div>
+          <div class="visual-panel">
+            <div class="panel-header"><strong>Adjustment to a transportation change</strong><span>Same shock, different equilibrium condition</span></div>
+            <div class="legend" aria-hidden="true">
+              <span class="legend-item"><span class="swatch dashed" style="color:#7c8798"></span>Initial curve</span>
+              <span class="legend-item"><span class="swatch" style="background:var(--blue)"></span>Closed city</span>
+              <span class="legend-item"><span class="swatch" style="background:var(--orange)"></span>Open city</span>
+            </div>
+            <div class="chart-wrap"><svg id="cityChart" viewBox="0 0 1000 570" role="img" aria-labelledby="cityChartTitle cityChartDesc"></svg></div>
+            <p class="chart-note">In the open-city comparison, the initial CBD bid is the utility-equivalent rent available in the wider system. Migration expands or contracts the city until that bid is restored.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="production" aria-labelledby="production-title">
+      <div class="card-body">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Production setting</span>
+            <h2 id="production-title">3. Competing producers and the land-rent envelope</h2>
+            <p>Under zero economic profit, each producer can pay its revenue minus nonland and transportation costs. The activity offering more at a location wins the land.</p>
+          </div>
+          <button class="action-button primary" id="animateProduction" type="button">Animate peas freight cost</button>
+        </div>
+        <div class="workspace-grid">
+          <div>
+            <div class="formula">R(d) = (PQ − w − i) − tQ × d<small>Intercept = net revenue before freight · Slope = freight cost per mile</small></div>
+            <div class="controls">
+              <div class="control"><label for="wheatRevenue">Wheat PQ <output id="wheatRevenueOut"></output></label><div class="control-row"><input id="wheatRevenue" type="range" min="60" max="220" step="5"><input id="wheatRevenueNum" type="number" min="60" max="220" step="5"></div></div>
+              <div class="control"><label for="wheatCost">Wheat w+i <output id="wheatCostOut"></output></label><div class="control-row"><input id="wheatCost" type="range" min="20" max="140" step="5"><input id="wheatCostNum" type="number" min="20" max="140" step="5"></div></div>
+              <div class="control"><label for="wheatFreight">Wheat tQ <output id="wheatFreightOut"></output></label><div class="control-row"><input id="wheatFreight" type="range" min="1" max="20" step="1"><input id="wheatFreightNum" type="number" min="1" max="20" step="1"></div></div>
+              <div class="control"><label for="peasRevenue">Peas PQ <output id="peasRevenueOut"></output></label><div class="control-row"><input id="peasRevenue" type="range" min="80" max="260" step="5"><input id="peasRevenueNum" type="number" min="80" max="260" step="5"></div></div>
+              <div class="control"><label for="peasCost">Peas w+i <output id="peasCostOut"></output></label><div class="control-row"><input id="peasCost" type="range" min="20" max="160" step="5"><input id="peasCostNum" type="number" min="20" max="160" step="5"></div></div>
+              <div class="control core"><label for="peasFreight">Peas tQ <output id="peasFreightOut"></output></label><div class="control-row"><input id="peasFreight" type="range" min="2" max="24" step="0.5"><input id="peasFreightNum" type="number" min="2" max="24" step="0.5"></div></div>
+            </div>
+            <div class="actions"><button class="action-button" id="resetProduction" type="button">Reset section</button></div>
+            <div class="metrics">
+              <div class="metric"><span class="metric-label">Wheat curve</span><span class="metric-value" id="wheatEquation"></span></div>
+              <div class="metric"><span class="metric-label">Peas curve</span><span class="metric-value" id="peasEquation"></span></div>
+              <div class="metric"><span class="metric-label">Switching location</span><span class="metric-value" id="productionSwitch"></span><span class="metric-note" id="productionSwitchNote"></span></div>
+            </div>
+            <div class="decision" id="productionDecision"></div>
+          </div>
+          <div class="visual-panel">
+            <div class="panel-header"><strong>Production bid-rent curves</strong><span>Highest nonnegative bid determines land use</span></div>
+            <div class="legend" aria-hidden="true">
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--blue)"></span>Wheat bid</span>
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--red)"></span>Peas bid</span>
+              <span class="legend-item"><span class="swatch" style="background:var(--navy)"></span>Final land rent</span>
+            </div>
+            <div class="chart-wrap"><svg id="productionChart" viewBox="0 0 1000 570" role="img" aria-labelledby="productionChartTitle productionChartDesc"></svg></div>
+            <p class="chart-note">A steeper curve does not necessarily imply a larger bid everywhere. Land use changes where the two offers intersect; beyond the zero-bid point, that activity cannot profitably occupy land.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="building" aria-labelledby="building-title">
+      <div class="card-body">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Chapter 5 · Example 3</span>
+            <h2 id="building-title">4. Which building should be built?</h2>
+            <p>All three designs provide one hectare of office space. A taller building uses less land but costs more capital. The winning design is the one that supports the highest bid rent per hectare.</p>
+          </div>
+          <button class="action-button primary" id="animateBuilding" type="button">Animate distance</button>
+        </div>
+        <div class="workspace-grid">
+          <div>
+            <div class="formula">Bid rent/hectare = [revenue − nonland cost − capital cost − travel cost] ÷ lot hectares</div>
+            <div class="controls">
+              <div class="control core"><label for="officeDistance">Distance from CBD <output id="officeDistanceOut"></output></label><div class="control-row"><input id="officeDistance" type="range" min="1" max="8" step="0.1"><input id="officeDistanceNum" type="number" min="1" max="8" step="0.1"></div></div>
+              <div class="control"><label for="officeRevenue">Office revenue <output id="officeRevenueOut"></output></label><div class="control-row"><input id="officeRevenue" type="range" min="350" max="750" step="10"><input id="officeRevenueNum" type="number" min="350" max="750" step="10"></div></div>
+              <div class="control"><label for="officeNonland">Nonland cost <output id="officeNonlandOut"></output></label><div class="control-row"><input id="officeNonland" type="range" min="50" max="300" step="10"><input id="officeNonlandNum" type="number" min="50" max="300" step="10"></div></div>
+              <div class="control"><label for="firstBlockCost">First-block travel <output id="firstBlockCostOut"></output></label><div class="control-row"><input id="firstBlockCost" type="range" min="10" max="90" step="1"><input id="firstBlockCostNum" type="number" min="10" max="90" step="1"></div></div>
+              <div class="control"><label for="laterBlockCost">Each later block <output id="laterBlockCostOut"></output></label><div class="control-row"><input id="laterBlockCost" type="range" min="10" max="70" step="1"><input id="laterBlockCostNum" type="number" min="10" max="70" step="1"></div></div>
+            </div>
+            <details>
+              <summary>Building design assumptions</summary>
+              <div class="controls">
+                <div class="control"><label for="tallCapital">Tall capital cost <output id="tallCapitalOut"></output></label><div class="control-row"><input id="tallCapital" type="range" min="120" max="400" step="10"><input id="tallCapitalNum" type="number" min="120" max="400" step="10"></div></div>
+                <div class="control"><label for="mediumCapital">Medium capital cost <output id="mediumCapitalOut"></output></label><div class="control-row"><input id="mediumCapital" type="range" min="50" max="220" step="10"><input id="mediumCapitalNum" type="number" min="50" max="220" step="10"></div></div>
+                <div class="control"><label for="shortCapital">Short capital cost <output id="shortCapitalOut"></output></label><div class="control-row"><input id="shortCapital" type="range" min="20" max="140" step="5"><input id="shortCapitalNum" type="number" min="20" max="140" step="5"></div></div>
+              </div>
+            </details>
+            <div class="actions">
+              <button class="action-button" id="distanceOne" type="button">Set d = 1</button>
+              <button class="action-button" id="distanceFive" type="button">Set d = 5</button>
+              <button class="action-button" id="resetBuilding" type="button">Reset section</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span class="metric-label">Travel cost</span><span class="metric-value" id="officeTravel"></span></div>
+              <div class="metric"><span class="metric-label">Winning building</span><span class="metric-value" id="buildingWinner"></span></div>
+              <div class="metric"><span class="metric-label">Land bid/hectare</span><span class="metric-value" id="winningBid"></span><span class="metric-note">maximum across designs</span></div>
+            </div>
+            <div class="decision" id="buildingDecision"></div>
+            <div class="table-panel">
+              <table>
+                <thead><tr><th>Design</th><th>Lot ha</th><th>Floors</th><th>Capital</th><th>Total land bid</th><th>Bid/ha</th></tr></thead>
+                <tbody id="buildingTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="visual-panel">
+            <div class="panel-header"><strong>Bid rent per hectare by building type</strong><span>Orange marker: selected distance</span></div>
+            <div class="legend" aria-hidden="true">
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--purple)"></span>Tall</span>
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--blue)"></span>Medium</span>
+              <span class="legend-item"><span class="swatch dashed" style="color:var(--green)"></span>Short</span>
+              <span class="legend-item"><span class="swatch" style="background:var(--navy)"></span>Winning envelope</span>
+            </div>
+            <div class="chart-wrap"><svg id="buildingChart" viewBox="0 0 1000 570" role="img" aria-labelledby="buildingChartTitle buildingChartDesc"></svg></div>
+            <p class="chart-note">The tall design capitalizes scarce central land through more floors. Farther out, lower-density designs can win because saving capital matters more than saving land.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="takeaways-title">
+      <div class="card-body">
+        <div class="section-heading"><div><span class="eyebrow">Interpretation</span><h2 id="takeaways-title">Three ideas to retain</h2></div></div>
+        <div class="takeaways">
+          <div class="takeaway"><h3>Access is capitalized</h3><p>A larger cost of distance produces a steeper bid-rent gradient because central locations save more travel resources.</p></div>
+          <div class="takeaway"><h3>The envelope is the market</h3><p>Individual curves describe willingness to pay. The highest feasible bid at each location determines rent and land use.</p></div>
+          <div class="takeaway"><h3>Equilibrium depends on closure</h3><p>Fixing population versus allowing migration changes which outcome—rent, population, or the city boundary—absorbs a shock.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="disclaimer"><strong>Educational use and scope.</strong> This tool simplifies urban structure, commuting, production, and development to isolate bid-rent mechanisms from FIN 351. It is intended for instruction at California State University, Fullerton. It does not estimate actual land values and is not financial, valuation, planning, legal, or investment advice.</aside>
+  </main>
+
+  <footer>Created by Desen Lin for FIN 351: Real Estate Principles at California State University, Fullerton. All calculations run locally in the browser; no student inputs are collected or transmitted.</footer>
+
+  <script>
+    (() => {
+      "use strict";
+      const $ = (id) => document.getElementById(id);
+      const NS = "http://www.w3.org/2000/svg";
+      const COLORS = { navy: "#00274c", orange: "#f58220", blue: "#2878b5", red: "#c44235", green: "#16745b", purple: "#7652a5", muted: "#5c677d", grid: "#d8dee9", gray: "#7c8798", white: "#ffffff" };
+      const money0 = (v) => `$${Math.round(v).toLocaleString("en-US")}`;
+      const money1 = (v) => `$${v.toFixed(1)}`;
+      const num1 = (v) => v.toFixed(1);
+      const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+      const defaults = {
+        households: { hhWage: 20, walkerSpeed: 3, driverSpeed: 20, walkerShare: 33.33, householdsTotal: 318, lotFrontage: 100, workdays: 20, fringeRent: 0 },
+        cities: { cityWage: 20, baseSpeed: 20, improvedSpeed: 25, cityRadius: 3, cityWorkdays: 20, cityFringe: 0 },
+        production: { wheatRevenue: 100, wheatCost: 50, wheatFreight: 5, peasRevenue: 150, peasCost: 75, peasFreight: 10 },
+        building: { officeDistance: 1, officeRevenue: 510, officeNonland: 150, firstBlockCost: 46, laterBlockCost: 41, tallCapital: 250, mediumCapital: 100, shortCapital: 50 }
+      };
+      const formatters = {
+        hhWage: money0, walkerSpeed: (v) => `${num1(v)} mph`, driverSpeed: (v) => `${num1(v)} mph`, walkerShare: (v) => `${num1(v)}%`, householdsTotal: (v) => Math.round(v).toLocaleString(), lotFrontage: (v) => `${Math.round(v)} ft`, workdays: (v) => `${Math.round(v)} days`, fringeRent: money0,
+        cityWage: money0, baseSpeed: (v) => `${num1(v)} mph`, improvedSpeed: (v) => `${num1(v)} mph`, cityRadius: (v) => `${num1(v)} mi`, cityWorkdays: (v) => `${Math.round(v)} days`, cityFringe: money0,
+        wheatRevenue: money0, wheatCost: money0, wheatFreight: money1, peasRevenue: money0, peasCost: money0, peasFreight: money1,
+        officeDistance: (v) => `${num1(v)} blocks`, officeRevenue: money0, officeNonland: money0, firstBlockCost: money0, laterBlockCost: money0, tallCapital: money0, mediumCapital: money0, shortCapital: money0
+      };
+      const sections = {
+        households: Object.keys(defaults.households),
+        cities: Object.keys(defaults.cities),
+        production: Object.keys(defaults.production),
+        building: Object.keys(defaults.building)
+      };
+
+      function read(id) { return Number($(id).value); }
+      function setPair(id, value, trigger = true) {
+        const range = $(id);
+        const exact = $(`${id}Num`);
+        const next = clamp(value, Number(range.min), Number(range.max));
+        const decimals = String(range.step).includes(".") ? String(range.step).split(".")[1].length : 0;
+        range.value = next.toFixed(decimals);
+        exact.value = next.toFixed(decimals);
+        $(`${id}Out`).textContent = formatters[id](next);
+        if (trigger) renderAll();
+      }
+      function bindPair(id) {
+        const range = $(id);
+        const exact = $(`${id}Num`);
+        const sync = (source, target) => {
+          let value = Number(source.value);
+          if (!Number.isFinite(value)) return;
+          value = clamp(value, Number(range.min), Number(range.max));
+          target.value = source === range ? range.value : value;
+          range.value = value;
+          exact.value = value;
+          $(`${id}Out`).textContent = formatters[id](value);
+          stopAnimationForControl(id);
+          renderAll();
+        };
+        range.addEventListener("input", () => sync(range, exact));
+        exact.addEventListener("input", () => sync(exact, range));
+      }
+      function resetSection(name) {
+        stopAnimation(name);
+        Object.entries(defaults[name]).forEach(([id, value]) => setPair(id, value, false));
+        renderAll();
+      }
+
+      function svgEl(name, attrs = {}) {
+        const node = document.createElementNS(NS, name);
+        Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, String(value)));
+        return node;
+      }
+      function svgText(svg, value, x, y, attrs = {}) {
+        const node = svgEl("text", { x, y, ...attrs });
+        node.textContent = value;
+        svg.appendChild(node);
+        return node;
+      }
+      function niceMax(value) {
+        if (!Number.isFinite(value) || value <= 0) return 10;
+        const magnitude = 10 ** Math.floor(Math.log10(value));
+        const scaled = value / magnitude;
+        const nice = scaled <= 1.2 ? 1.2 : scaled <= 2 ? 2 : scaled <= 3 ? 3 : scaled <= 5 ? 5 : 10;
+        return nice * magnitude;
+      }
+      function points(fn, x0, x1, steps = 80) {
+        return Array.from({ length: steps + 1 }, (_, i) => {
+          const x = x0 + (x1 - x0) * i / steps;
+          return [x, fn(x)];
+        });
+      }
+      function drawChart(svg, options) {
+        const width = 1000, height = 570;
+        const margin = { top: 34, right: 38, bottom: 78, left: 92 };
+        const iw = width - margin.left - margin.right;
+        const ih = height - margin.top - margin.bottom;
+        const { xMin = 0, xMax, yMin = 0, yMax, xLabel, yLabel, series, markers = [], regions = [], title, description } = options;
+        const sx = (v) => margin.left + (v - xMin) / (xMax - xMin) * iw;
+        const sy = (v) => margin.top + (yMax - v) / (yMax - yMin) * ih;
+        svg.innerHTML = "";
+        const titleNode = svgEl("title", { id: `${svg.id}Title` }); titleNode.textContent = title;
+        const descNode = svgEl("desc", { id: `${svg.id}Desc` }); descNode.textContent = description;
+        svg.append(titleNode, descNode);
+
+        regions.forEach((r) => {
+          const x1 = sx(clamp(r.x1, xMin, xMax));
+          const x2 = sx(clamp(r.x2, xMin, xMax));
+          svg.appendChild(svgEl("rect", { x: x1, y: margin.top, width: Math.max(0, x2 - x1), height: ih, fill: r.fill }));
+          if (r.label && x2 - x1 > 85) svgText(svg, r.label, (x1 + x2) / 2, margin.top + 22, { "text-anchor": "middle", fill: r.color || COLORS.muted, "font-size": 13, "font-weight": 800 });
+        });
+
+        for (let i = 0; i <= 5; i += 1) {
+          const xv = xMin + (xMax - xMin) * i / 5;
+          const px = sx(xv);
+          svg.appendChild(svgEl("line", { x1: px, y1: margin.top, x2: px, y2: height - margin.bottom, stroke: COLORS.grid, "stroke-width": 1 }));
+          svgText(svg, Math.abs(xv) >= 100 ? Math.round(xv).toLocaleString() : xv.toFixed(xMax - xMin < 10 ? 1 : 0), px, height - margin.bottom + 25, { "text-anchor": "middle", fill: COLORS.muted, "font-size": 12 });
+          const yv = yMin + (yMax - yMin) * i / 5;
+          const py = sy(yv);
+          svg.appendChild(svgEl("line", { x1: margin.left, y1: py, x2: width - margin.right, y2: py, stroke: COLORS.grid, "stroke-width": 1 }));
+          svgText(svg, Math.abs(yv) >= 100 ? Math.round(yv).toLocaleString() : yv.toFixed(yMax < 20 ? 1 : 0), margin.left - 12, py + 4, { "text-anchor": "end", fill: COLORS.muted, "font-size": 12 });
+        }
+
+        series.forEach((s) => {
+          const visible = s.points.filter(([, y]) => Number.isFinite(y)).map(([x, y]) => `${sx(clamp(x, xMin, xMax))},${sy(clamp(y, yMin, yMax))}`).join(" ");
+          svg.appendChild(svgEl("polyline", { points: visible, fill: "none", stroke: s.color, "stroke-width": s.width || 3, "stroke-linejoin": "round", "stroke-linecap": "round", ...(s.dash ? { "stroke-dasharray": s.dash } : {}) }));
+        });
+
+        markers.forEach((m) => {
+          if (m.x < xMin || m.x > xMax || m.y < yMin || m.y > yMax) return;
+          const px = sx(m.x), py = sy(m.y);
+          if (m.vertical) svg.appendChild(svgEl("line", { x1: px, y1: margin.top, x2: px, y2: height - margin.bottom, stroke: m.color || COLORS.orange, "stroke-width": 2, "stroke-dasharray": "7 5" }));
+          svg.appendChild(svgEl("circle", { cx: px, cy: py, r: m.r || 7, fill: m.fill || COLORS.white, stroke: m.color || COLORS.orange, "stroke-width": 3 }));
+          if (m.label) svgText(svg, m.label, px + (m.dx || 0), py + (m.dy || -14), { "text-anchor": m.anchor || "middle", fill: m.color || COLORS.navy, "font-size": 12, "font-weight": 850 });
+        });
+
+        svg.appendChild(svgEl("line", { x1: margin.left, y1: height - margin.bottom, x2: width - margin.right, y2: height - margin.bottom, stroke: COLORS.navy, "stroke-width": 1.6 }));
+        svg.appendChild(svgEl("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: height - margin.bottom, stroke: COLORS.navy, "stroke-width": 1.6 }));
+        svgText(svg, xLabel, margin.left + iw / 2, height - 18, { "text-anchor": "middle", fill: COLORS.navy, "font-size": 14, "font-weight": 800 });
+        const yl = svgText(svg, yLabel, 24, margin.top + ih / 2, { "text-anchor": "middle", fill: COLORS.navy, "font-size": 14, "font-weight": 800 });
+        yl.setAttribute("transform", `rotate(-90 24 ${margin.top + ih / 2})`);
+      }
+
+      function householdModel() {
+        const wage = read("hhWage"), days = read("workdays"), walkerSpeed = read("walkerSpeed"), driverSpeed = read("driverSpeed");
+        const radius = read("householdsTotal") / 2 * read("lotFrontage") / 5280;
+        const switchD = radius * read("walkerShare") / 100;
+        const fringe = read("fringeRent");
+        const cw = wage / walkerSpeed * 2 * days;
+        const cd = wage / driverSpeed * 2 * days;
+        const driver = (d) => fringe + cd * (radius - d);
+        const switchRent = driver(switchD);
+        const walker = (d) => switchRent + cw * (switchD - d);
+        return { radius, switchD, fringe, cw, cd, driver, walker, switchRent };
+      }
+      function renderHouseholds() {
+        const m = householdModel();
+        const xMax = Math.max(1, m.radius * 1.22);
+        const yMax = niceMax(Math.max(m.walker(0), m.driver(0)) * 1.12);
+        $("hhBoundary").textContent = `${m.radius.toFixed(2)} mi`;
+        $("hhSwitch").textContent = `${m.switchD.toFixed(2)} mi`;
+        $("hhCbdBid").textContent = money0(m.walker(0));
+        $("hhDecision").innerHTML = `<strong>Sorting result:</strong> walkers pay ${money1(m.cw)} per mile per month versus ${money1(m.cd)} for drivers. Walkers occupy 0–${m.switchD.toFixed(2)} miles; drivers occupy ${m.switchD.toFixed(2)}–${m.radius.toFixed(2)} miles.`;
+        drawChart($("householdChart"), {
+          xMax, yMax, xLabel: "Distance to CBD (miles)", yLabel: "Monthly bid rent ($)",
+          title: "Equilibrium residential bid-rent curve", description: "Walker and driver bid curves join at a sorting boundary to form the equilibrium land-rent envelope.",
+          regions: [
+            { x1: 0, x2: m.switchD, fill: "rgba(196,66,53,0.07)", label: "Walkers", color: COLORS.red },
+            { x1: m.switchD, x2: m.radius, fill: "rgba(40,120,181,0.07)", label: "Drivers", color: COLORS.blue }
+          ],
+          series: [
+            { points: points(m.walker, 0, Math.min(xMax, Math.max(m.radius, m.switchD + m.walker(m.switchD) / m.cw))), color: COLORS.red, width: 2.5, dash: "9 7" },
+            { points: points(m.driver, 0, m.radius), color: COLORS.blue, width: 2.5, dash: "9 7" },
+            { points: points(m.walker, 0, m.switchD), color: COLORS.navy, width: 5 },
+            { points: points(m.driver, m.switchD, m.radius), color: COLORS.navy, width: 5 }
+          ],
+          markers: [
+            { x: m.switchD, y: m.switchRent, color: COLORS.orange, label: `Switch: ${m.switchD.toFixed(2)} mi`, dy: -16 },
+            { x: m.radius, y: m.fringe, color: COLORS.navy, label: "City edge", dy: -15, anchor: "end", dx: -8 }
+          ]
+        });
+      }
+
+      function renderCities() {
+        const wage = read("cityWage"), days = read("cityWorkdays"), initialSpeed = read("baseSpeed"), speed = read("improvedSpeed"), D = read("cityRadius"), fringe = read("cityFringe");
+        const c0 = wage / initialSpeed * 2 * days;
+        const c1 = wage / speed * 2 * days;
+        const cbd0 = fringe + c0 * D;
+        const closed = (d) => fringe + c1 * (D - d);
+        const initial = (d) => fringe + c0 * (D - d);
+        const openD = Math.max(0.05, (cbd0 - fringe) / c1);
+        const open = (d) => cbd0 - c1 * d;
+        const xMax = Math.max(D, openD) * 1.22;
+        const yMax = niceMax(Math.max(cbd0, closed(0)) * 1.12);
+        const popChange = (openD / D - 1) * 100;
+        $("cityCostChange").textContent = `${money1(c0)} → ${money1(c1)}`;
+        $("closedCbd").textContent = money0(closed(0));
+        $("openRadius").textContent = `${openD.toFixed(2)} mi`;
+        $("openPopulationNote").textContent = `${popChange >= 0 ? "+" : ""}${popChange.toFixed(1)}% population at fixed density`;
+        const direction = c1 < c0 ? "improvement" : c1 > c0 ? "deterioration" : "no change";
+        $("cityDecision").innerHTML = `<strong>${direction[0].toUpperCase() + direction.slice(1)}:</strong> the closed city changes its CBD bid from ${money0(cbd0)} to ${money0(closed(0))}. The open city restores the ${money0(cbd0)} CBD bid by moving its boundary from ${D.toFixed(2)} to ${openD.toFixed(2)} miles.`;
+        drawChart($("cityChart"), {
+          xMax, yMax, xLabel: "Distance to CBD (miles)", yLabel: "Monthly bid rent ($)",
+          title: "Closed- and open-city adjustments", description: "A transportation change rotates the bid-rent curve around the boundary in a closed city and around the CBD intercept in an open city.",
+          series: [
+            { points: points(initial, 0, D), color: COLORS.gray, width: 2.5, dash: "9 7" },
+            { points: points(closed, 0, D), color: COLORS.blue, width: 4 },
+            { points: points(open, 0, openD), color: COLORS.orange, width: 4 }
+          ],
+          markers: [
+            { x: D, y: fringe, color: COLORS.blue, label: "Closed edge", dy: -14, dx: -7, anchor: "end" },
+            { x: openD, y: fringe, color: COLORS.orange, label: "Open edge", dy: -14, dx: 7, anchor: "start" }
+          ]
+        });
+      }
+
+      function productionModel() {
+        const aw = read("wheatRevenue") - read("wheatCost"), bw = read("wheatFreight");
+        const ap = read("peasRevenue") - read("peasCost"), bp = read("peasFreight");
+        const wheat = (d) => aw - bw * d;
+        const peas = (d) => ap - bp * d;
+        const zeroW = Math.max(0, aw / bw), zeroP = Math.max(0, ap / bp);
+        const switchD = Math.abs(bp - bw) < 1e-9 ? null : (ap - aw) / (bp - bw);
+        return { aw, bw, ap, bp, wheat, peas, zeroW, zeroP, switchD };
+      }
+      function renderProduction() {
+        const m = productionModel();
+        const xMax = Math.max(4, m.zeroW, m.zeroP) * 1.08;
+        const yMax = niceMax(Math.max(m.aw, m.ap, 10) * 1.1);
+        const envelope = (d) => Math.max(0, m.wheat(d), m.peas(d));
+        $("wheatEquation").textContent = `${money0(m.aw)} − ${money1(m.bw)}d`;
+        $("peasEquation").textContent = `${money0(m.ap)} − ${money1(m.bp)}d`;
+        const validSwitch = m.switchD !== null && m.switchD >= 0 && m.switchD <= xMax && envelope(m.switchD) > 0;
+        $("productionSwitch").textContent = validSwitch ? `${m.switchD.toFixed(2)} mi` : "No positive switch";
+        $("productionSwitchNote").textContent = validSwitch ? `${money0(envelope(m.switchD))} bid at intersection` : "one activity dominates the feasible range";
+        const nearWinner = m.wheat(0) >= m.peas(0) ? "wheat" : "peas";
+        const farTest = xMax * 0.75;
+        const farWinner = m.wheat(farTest) >= m.peas(farTest) ? "wheat" : "peas";
+        $("productionDecision").innerHTML = validSwitch
+          ? `<strong>Land-use pattern:</strong> ${nearWinner} wins near the CBD and ${farWinner} wins beyond ${m.switchD.toFixed(2)} miles, provided its bid remains nonnegative.`
+          : `<strong>Land-use pattern:</strong> ${nearWinner} offers the higher feasible bid across the plotted market; there is no positive-rent switching location.`;
+        const regions = validSwitch ? [
+          { x1: 0, x2: m.switchD, fill: nearWinner === "wheat" ? "rgba(40,120,181,0.07)" : "rgba(196,66,53,0.07)", label: nearWinner[0].toUpperCase() + nearWinner.slice(1), color: nearWinner === "wheat" ? COLORS.blue : COLORS.red },
+          { x1: m.switchD, x2: Math.max(m.zeroW, m.zeroP), fill: farWinner === "wheat" ? "rgba(40,120,181,0.07)" : "rgba(196,66,53,0.07)", label: farWinner[0].toUpperCase() + farWinner.slice(1), color: farWinner === "wheat" ? COLORS.blue : COLORS.red }
+        ] : [];
+        drawChart($("productionChart"), {
+          xMax, yMax, xLabel: "Distance to CBD (miles)", yLabel: "Bid rent ($)",
+          title: "Production bid-rent curves", description: "Wheat and peas compete for land, and the higher nonnegative bid forms the market land-rent envelope.", regions,
+          series: [
+            { points: points(m.wheat, 0, m.zeroW), color: COLORS.blue, width: 2.5, dash: "9 7" },
+            { points: points(m.peas, 0, m.zeroP), color: COLORS.red, width: 2.5, dash: "9 7" },
+            { points: points(envelope, 0, Math.max(m.zeroW, m.zeroP)), color: COLORS.navy, width: 5 }
+          ],
+          markers: validSwitch ? [{ x: m.switchD, y: envelope(m.switchD), color: COLORS.orange, label: `${m.switchD.toFixed(2)} mi, ${money0(envelope(m.switchD))}` }] : []
+        });
+      }
+
+      const buildingDefs = [
+        { key: "tall", name: "Tall", lot: 0.04, floors: 25, color: COLORS.purple, capitalId: "tallCapital" },
+        { key: "medium", name: "Medium", lot: 0.25, floors: 4, color: COLORS.blue, capitalId: "mediumCapital" },
+        { key: "short", name: "Short", lot: 1, floors: 1, color: COLORS.green, capitalId: "shortCapital" }
+      ];
+      function travelCost(d) { return read("firstBlockCost") + Math.max(0, d - 1) * read("laterBlockCost"); }
+      function buildingBid(def, d) {
+        const total = read("officeRevenue") - read("officeNonland") - read(def.capitalId) - travelCost(d);
+        return { total, perHa: total / def.lot };
+      }
+      function renderBuilding() {
+        const d = read("officeDistance");
+        const results = buildingDefs.map((def) => ({ ...def, capital: read(def.capitalId), ...buildingBid(def, d) }));
+        const winner = results.reduce((best, row) => row.perHa > best.perHa ? row : best);
+        const feasible = winner.perHa >= 0;
+        const allCurves = buildingDefs.map((def) => ({ def, fn: (x) => buildingBid(def, x).perHa }));
+        const envelope = (x) => Math.max(0, ...allCurves.map((c) => c.fn(x)));
+        const sampled = points(envelope, 1, 8, 140);
+        const values = sampled.map(([, y]) => y).concat(allCurves.flatMap((c) => [c.fn(1), c.fn(8)]));
+        const maxRaw = Math.max(...values);
+        const yMin = 0;
+        const yMax = niceMax(Math.max(100, maxRaw) * 1.08);
+        $("officeTravel").textContent = money0(travelCost(d));
+        $("buildingWinner").textContent = feasible ? winner.name : "None feasible";
+        $("winningBid").textContent = feasible ? money0(winner.perHa) : money0(0);
+        $("buildingDecision").innerHTML = feasible
+          ? `<strong>${winner.name} wins at ${d.toFixed(1)} blocks:</strong> it supports ${money0(winner.perHa)} per hectare, the highest of the three bids. A competitive landowner can charge this amount, leaving the selected office firm with zero economic profit.`
+          : `<strong>No office design is feasible at ${d.toFixed(1)} blocks:</strong> ${winner.name} has the least-negative offer (${money0(winner.perHa)} per hectare), but no design can pay a nonnegative land rent under these assumptions.`;
+        $("buildingTable").innerHTML = results.map((row) => `<tr class="${feasible && row.key === winner.key ? "winner" : ""}"><td>${row.name}${feasible && row.key === winner.key ? " · winner" : ""}</td><td>${row.lot.toFixed(2)}</td><td>${row.floors}</td><td>${money0(row.capital)}</td><td>${money0(row.total)}</td><td>${money0(row.perHa)}</td></tr>`).join("");
+        drawChart($("buildingChart"), {
+          xMin: 1, xMax: 8, yMin, yMax, xLabel: "Distance from CBD (blocks)", yLabel: "Bid rent per hectare ($)",
+          title: "Building-choice bid-rent envelope", description: "Tall, medium, and short office buildings support different land bids. The highest bid at the selected distance determines the building choice.",
+          series: [
+            ...allCurves.map((c) => ({ points: points((x) => Math.max(0, c.fn(x)), 1, 8), color: c.def.color, width: 2.5, dash: "9 7" })),
+            { points: sampled, color: COLORS.navy, width: 5 }
+          ],
+          markers: [{ x: d, y: feasible ? winner.perHa : 0, color: COLORS.orange, fill: COLORS.orange, r: 9, vertical: true, label: feasible ? `${winner.name}: ${money0(winner.perHa)}` : "No feasible office bid", dy: feasible && winner.perHa > yMax * 0.88 ? 22 : -16 }]
+        });
+      }
+
+      function renderAll() { renderHouseholds(); renderCities(); renderProduction(); renderBuilding(); }
+
+      const animations = {};
+      function stopAnimation(name) {
+        const state = animations[name];
+        if (state?.frame) cancelAnimationFrame(state.frame);
+        delete animations[name];
+        const button = $(`animate${name[0].toUpperCase()}${name.slice(1)}`);
+        if (button) button.textContent = { households: "Animate walker speed", cities: "Animate improved speed", production: "Animate peas freight cost", building: "Animate distance" }[name];
+      }
+      function stopAnimationForControl(id) {
+        Object.entries(sections).forEach(([name, ids]) => { if (ids.includes(id)) stopAnimation(name); });
+      }
+      function toggleAnimation(name) {
+        if (animations[name]) { stopAnimation(name); return; }
+        const specs = {
+          households: { id: "walkerSpeed", min: 2.3, max: 7.5, duration: 6200 },
+          cities: { id: "improvedSpeed", min: 14, max: 42, duration: 6800 },
+          production: { id: "peasFreight", min: 3, max: 22, duration: 7000 },
+          building: { id: "officeDistance", min: 1, max: 8, duration: 7600 }
+        };
+        const spec = specs[name];
+        const state = { start: null, frame: null };
+        animations[name] = state;
+        $(`animate${name[0].toUpperCase()}${name.slice(1)}`).textContent = "Pause animation";
+        const step = (timestamp) => {
+          if (!animations[name]) return;
+          if (state.start === null) state.start = timestamp;
+          const phase = ((timestamp - state.start) % spec.duration) / spec.duration;
+          const wave = 0.5 - 0.5 * Math.cos(phase * Math.PI * 2);
+          setPair(spec.id, spec.min + (spec.max - spec.min) * wave, false);
+          renderAll();
+          state.frame = requestAnimationFrame(step);
+        };
+        state.frame = requestAnimationFrame(step);
+      }
+
+      Object.keys(formatters).forEach(bindPair);
+      Object.entries(defaults).forEach(([name, values]) => Object.entries(values).forEach(([id, value]) => setPair(id, value, false)));
+      $("animateHouseholds").addEventListener("click", () => toggleAnimation("households"));
+      $("animateCities").addEventListener("click", () => toggleAnimation("cities"));
+      $("animateProduction").addEventListener("click", () => toggleAnimation("production"));
+      $("animateBuilding").addEventListener("click", () => toggleAnimation("building"));
+      $("resetHouseholds").addEventListener("click", () => resetSection("households"));
+      $("resetCities").addEventListener("click", () => resetSection("cities"));
+      $("resetProduction").addEventListener("click", () => resetSection("production"));
+      $("resetBuilding").addEventListener("click", () => resetSection("building"));
+      $("distanceOne").addEventListener("click", () => { stopAnimation("building"); setPair("officeDistance", 1); });
+      $("distanceFive").addEventListener("click", () => { stopAnimation("building"); setPair("officeDistance", 5); });
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
