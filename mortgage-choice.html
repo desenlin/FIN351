@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive FIN 351 learning tool for APR, effective borrowing cost, Option ARMs, interest-only amortizing mortgages, and conventional fixed-rate mortgages.">
+  <title>Mortgage Cost and Payment Risk | FIN 351</title>
+  <style>
+    :root {
+      --navy:#00274c; --navy-2:#0b3a67; --orange:#f58220; --orange-dark:#c85f05;
+      --ink:#172033; --muted:#5c677d; --line:#d8dee9; --soft:#f3f6fa;
+      --white:#fff; --blue:#2878b5; --red:#c44235; --green:#16745b;
+      --purple:#7652a5; --gold:#a76d00; --shadow:0 12px 30px rgba(0,39,76,.10);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);background:#eef2f7;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit} button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid rgba(245,130,32,.45);outline-offset:2px}
+    .topbar{height:8px;background:var(--orange)}
+    .hero{color:var(--white);background:radial-gradient(circle at 91% 12%,rgba(245,130,32,.22),transparent 30%),linear-gradient(135deg,var(--navy),var(--navy-2))}
+    .hero-inner,main,footer{width:min(1180px,calc(100% - 32px));margin:0 auto}.hero-inner{padding:42px 0 46px}
+    .course-tag{display:inline-flex;margin-bottom:14px;padding:6px 11px;color:var(--navy);background:var(--orange);border-radius:999px;font-size:.78rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
+    h1,h2,h3,p{margin-top:0} h1{max-width:940px;margin-bottom:12px;font-size:clamp(2rem,4.6vw,3.45rem);line-height:1.08;letter-spacing:-.035em}
+    .hero p{max-width:900px;margin-bottom:8px;color:#e4edf6;font-size:clamp(1rem,2vw,1.18rem)}.creator{color:#f8c99f!important;font-size:.9rem!important;font-weight:700}
+    .jump-nav{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.jump-nav a{padding:8px 11px;color:var(--white);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.28);border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:750}.jump-nav a:hover{background:rgba(255,255,255,.16)}
+    main{display:grid;gap:22px;padding:28px 0 46px}.card{overflow:hidden;background:var(--white);border:1px solid rgba(0,39,76,.10);border-radius:16px;box-shadow:var(--shadow);scroll-margin-top:18px}.card-body{padding:24px}
+    .section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}.section-heading h2{margin-bottom:4px;color:var(--navy);font-size:1.42rem;line-height:1.25}.section-heading p{max-width:790px;margin-bottom:0;color:var(--muted);font-size:.94rem}
+    .eyebrow{display:block;margin-bottom:7px;color:var(--orange-dark);font-size:.75rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
+    .concept-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.concept-panel{min-height:100%;padding:18px;background:#f8fafc;border:1px solid var(--line);border-top:4px solid var(--orange);border-radius:11px}.concept-panel h3{margin-bottom:6px;color:var(--navy);font-size:.98rem}.concept-panel p{margin-bottom:0;color:var(--muted);font-size:.85rem}
+    .workspace-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.38fr);gap:18px;align-items:start}.formula{margin:0 0 17px;padding:15px 17px;color:var(--white);background:var(--navy);border-radius:10px;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:clamp(.95rem,2vw,1.12rem)}.formula small{display:block;margin-top:5px;color:#dce9f5;font-family:Inter,sans-serif;font-size:.73rem}
+    .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-bottom:15px}.control{min-width:0;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px}.control.core{border-top:4px solid var(--orange)}.control label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:7px;color:var(--navy);font-size:.79rem;font-weight:780}.control output{color:var(--orange-dark);white-space:nowrap}.control-row{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:8px;align-items:center}
+    input[type=range]{width:100%;accent-color:var(--orange);cursor:pointer}input[type=number],select{width:100%;min-height:34px;padding:5px 7px;color:var(--ink);background:var(--white);border:1px solid #aeb9c8;border-radius:7px;text-align:right;font-size:.8rem;font-weight:650}select{text-align:left}
+    details{margin-bottom:15px;background:#fbfcfe;border:1px solid var(--line);border-radius:10px}summary{padding:11px 13px;color:var(--navy);cursor:pointer;font-size:.86rem;font-weight:800}details .controls{margin:0;padding:3px 13px 13px}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}.action-button{min-height:38px;padding:8px 13px;color:var(--navy);background:var(--soft);border:1px solid #c9d2df;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:780}.action-button:hover{background:#e6edf5}.action-button.primary{color:var(--white);background:var(--navy);border-color:var(--navy)}.action-button.primary:hover{background:var(--navy-2)}
+    .loan-label{margin:2px 0 8px;color:var(--navy);font-size:.77rem;font-weight:850;letter-spacing:.05em;text-transform:uppercase}.loan-label.a{color:var(--blue)}.loan-label.b{color:var(--red)}
+    .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:15px 0 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}.metric{min-width:0;padding:13px;border-right:1px solid var(--line)}.metric:last-child{border-right:0}.metric-label{display:block;margin-bottom:4px;color:var(--muted);font-size:.67rem;font-weight:850;letter-spacing:.04em;text-transform:uppercase}.metric-value{display:block;overflow-wrap:anywhere;color:var(--navy);font-size:clamp(1rem,2vw,1.3rem);font-weight:850;line-height:1.2}.metric-note{display:block;margin-top:4px;color:var(--muted);font-size:.71rem}
+    .visual-stack{display:grid;gap:15px}.visual-panel,.table-panel{overflow:hidden;background:var(--white);border:1px solid var(--line);border-radius:11px}.panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;color:var(--white);background:var(--navy)}.panel-header strong{font-size:.92rem}.panel-header span{color:#dce9f5;font-size:.76rem;text-align:right}.chart-wrap{width:100%;min-width:0;overflow-x:auto}svg{display:block;width:100%;height:auto}.legend{display:flex;flex-wrap:wrap;gap:7px 14px;padding:11px 14px 0;color:var(--muted);font-size:.75rem}.legend-item{display:inline-flex;align-items:center;gap:6px}.swatch{width:22px;height:4px;border-radius:99px}.swatch.dashed{height:0;border-top:3px dashed currentColor}.chart-note{margin:9px 14px 14px;color:var(--muted);font-size:.79rem}
+    .decision{margin-top:15px;padding:14px 16px;color:#0d5542;background:#e8f6f1;border:1px solid #89c8b5;border-radius:10px;font-size:.84rem}.decision strong{color:var(--navy)}
+    .warning{color:#6c4d00;background:#fff8df;border-color:#e8cf78}.warning strong{color:#5b4300}
+    .table-panel{margin-top:15px;overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-size:.8rem}th{color:var(--navy);background:#edf2f7;font-size:.68rem;letter-spacing:.03em;text-transform:uppercase}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#fafbfd}tbody tr:last-child td{border-bottom:0}
+    .takeaways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.takeaway{padding:17px;background:#f8fafc;border:1px solid var(--line);border-top:4px solid var(--orange);border-radius:10px}.takeaway h3{margin-bottom:7px;color:var(--navy);font-size:1rem}.takeaway p{margin-bottom:0;color:var(--muted);font-size:.87rem}.disclaimer{padding:18px 20px;color:#5b4300;background:#fff8df;border:1px solid #e8cf78;border-radius:11px;font-size:.86rem}footer{padding:0 0 34px;color:var(--muted);text-align:center;font-size:.82rem}
+    @media(max-width:960px){.concept-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-grid{grid-template-columns:1fr}}
+    @media(max-width:680px){.hero-inner{padding:34px 0 38px}.card-body{padding:18px}.concept-grid,.controls,.takeaways{grid-template-columns:1fr}.section-heading{display:block}.section-heading .action-button{margin-top:12px}.metrics{grid-template-columns:1fr}.metric{border-right:0;border-bottom:1px solid var(--line)}.metric:last-child{border-bottom:0}.panel-header{align-items:flex-start;flex-direction:column}.panel-header span{text-align:left}}
+  </style>
+</head>
+<body>
+  <div class="topbar"></div>
+  <header class="hero"><div class="hero-inner">
+    <span class="course-tag">FIN 351 · Real Estate Principles</span>
+    <h1>Mortgage Cost and Payment Risk</h1>
+    <p>See why fees and the expected payoff date change borrowing cost—and how conventional, interest-only, and Option ARM structures reshape payments and loan balances.</p>
+    <p class="creator">Created by Desen Lin · California State University, Fullerton</p>
+    <nav class="jump-nav" aria-label="Tool sections"><a href="#cost">APR and ECB</a><a href="#structures">Mortgage structures</a><a href="#takeaways">Key takeaways</a></nav>
+  </div></header>
+
+  <main>
+    <section class="card" aria-labelledby="learning-map-title"><div class="card-body">
+      <div class="section-heading"><div><span class="eyebrow">Learning map</span><h2 id="learning-map-title">One loan, several measures of cost and risk</h2><p>Change any orange-accented assumption first. Every payment, balance, effective rate, curve, and comparison updates immediately.</p></div></div>
+      <div class="concept-grid">
+        <div class="concept-panel"><h3>1 · Contract rate</h3><p>Determines the scheduled payment and interest charged, but does not summarize up-front borrowing costs.</p></div>
+        <div class="concept-panel"><h3>2 · APR</h3><p>Converts interest and finance charges into one rate assuming the loan remains outstanding for its full term.</p></div>
+        <div class="concept-panel"><h3>3 · ECB</h3><p>Recalculates cost for the expected payoff date, spreading up-front charges over the actual holding period.</p></div>
+        <div class="concept-panel"><h3>4 · Payment structure</h3><p>Lower initial payments may preserve the balance, create negative amortization, and produce a later payment shock.</p></div>
+      </div>
+    </div></section>
+
+    <section class="card" id="cost" aria-labelledby="cost-title"><div class="card-body">
+      <div class="section-heading"><div><span class="eyebrow">Mortgage comparison</span><h2 id="cost-title">1. How assumptions change APR and effective borrowing cost</h2><p>APR prices the full contractual term. ECB uses the same monthly payment but adds the remaining balance at the selected payoff date. Compare Loan A's higher rate and lower fees with Loan B's lower rate and higher fees.</p></div><button class="action-button primary" id="animateHolding" type="button">Animate payoff year</button></div>
+      <div class="workspace-grid">
+        <div>
+          <div class="formula">Net proceeds = loan amount × (1 − finance charges)<small>APR uses all scheduled payments; ECB also includes the balance due at early payoff.</small></div>
+          <div class="controls">
+            <div class="control core"><label for="costLoan">Loan amount <output id="costLoanOut"></output></label><div class="control-row"><input id="costLoan" type="range" min="100000" max="600000" step="5000"><input id="costLoanNum" type="number" min="100000" max="600000" step="5000"></div></div>
+            <div class="control core"><label for="holdingYear">Expected payoff <output id="holdingYearOut"></output></label><div class="control-row"><input id="holdingYear" type="range" min="1" max="30" step="1"><input id="holdingYearNum" type="number" min="1" max="30" step="1"></div></div>
+            <div class="control"><label for="costTerm">Mortgage term <output id="costTermOut"></output></label><div class="control-row"><input id="costTerm" type="range" min="10" max="40" step="5"><input id="costTermNum" type="number" min="10" max="40" step="5"></div></div>
+          </div>
+          <p class="loan-label a">Loan A · higher rate, lower fees</p>
+          <div class="controls">
+            <div class="control core"><label for="rateA">Contract rate <output id="rateAOut"></output></label><div class="control-row"><input id="rateA" type="range" min="3" max="10" step=".05"><input id="rateANum" type="number" min="3" max="10" step=".05"></div></div>
+            <div class="control"><label for="feesA">Up-front fees <output id="feesAOut"></output></label><div class="control-row"><input id="feesA" type="range" min="0" max="6" step=".1"><input id="feesANum" type="number" min="0" max="6" step=".1"></div></div>
+            <div class="control"><label for="miA">Up-front mortgage insurance <output id="miAOut"></output></label><div class="control-row"><input id="miA" type="range" min="0" max="3" step=".1"><input id="miANum" type="number" min="0" max="3" step=".1"></div></div>
+          </div>
+          <p class="loan-label b">Loan B · lower rate, higher fees</p>
+          <div class="controls">
+            <div class="control core"><label for="rateB">Contract rate <output id="rateBOut"></output></label><div class="control-row"><input id="rateB" type="range" min="3" max="10" step=".05"><input id="rateBNum" type="number" min="3" max="10" step=".05"></div></div>
+            <div class="control"><label for="feesB">Up-front fees <output id="feesBOut"></output></label><div class="control-row"><input id="feesB" type="range" min="0" max="6" step=".1"><input id="feesBNum" type="number" min="0" max="6" step=".1"></div></div>
+            <div class="control"><label for="miB">Up-front mortgage insurance <output id="miBOut"></output></label><div class="control-row"><input id="miB" type="range" min="0" max="3" step=".1"><input id="miBNum" type="number" min="0" max="3" step=".1"></div></div>
+          </div>
+          <div class="actions"><button class="action-button" id="resetCost" type="button">Reset Chapter 10 example</button></div>
+          <div class="metrics">
+            <div class="metric"><span class="metric-label">Loan A</span><span class="metric-value" id="costMetricA"></span><span class="metric-note" id="costMetricANote"></span></div>
+            <div class="metric"><span class="metric-label">Loan B</span><span class="metric-value" id="costMetricB"></span><span class="metric-note" id="costMetricBNote"></span></div>
+            <div class="metric"><span class="metric-label">Lower ECB</span><span class="metric-value" id="costWinner"></span><span class="metric-note" id="costWinnerNote"></span></div>
+          </div>
+          <div class="decision" id="costDecision"></div>
+        </div>
+        <div class="visual-stack">
+          <div class="visual-panel"><div class="panel-header"><strong>Effective cost over the payoff horizon</strong><span>APR is the full-term endpoint of each ECB curve</span></div><div class="legend"><span class="legend-item"><span class="swatch" style="background:var(--blue)"></span>Loan A ECB</span><span class="legend-item"><span class="swatch" style="background:var(--red)"></span>Loan B ECB</span><span class="legend-item" style="color:var(--blue)"><span class="swatch dashed"></span>Loan A APR</span><span class="legend-item" style="color:var(--red)"><span class="swatch dashed"></span>Loan B APR</span></div><div class="chart-wrap"><svg id="costCurve" viewBox="0 0 760 405" role="img" aria-label="ECB by payoff year with APR reference lines"></svg></div><p class="chart-note">Moving right spreads the same up-front charges over more years. The vertical marker is the selected payoff year.</p></div>
+          <div class="visual-panel"><div class="panel-header"><strong>Rates at the selected payoff year</strong><span>Nominal annual rates with monthly compounding</span></div><div class="chart-wrap"><svg id="costBars" viewBox="0 0 760 310" role="img" aria-label="Contract rate, APR, and ECB for two loans"></svg></div><p class="chart-note">APR can reverse a comparison based only on contract rates; ECB can reverse it again when the payoff occurs early.</p></div>
+        </div>
+      </div>
+    </div></section>
+
+    <section class="card" id="structures" aria-labelledby="structures-title"><div class="card-body">
+      <div class="section-heading"><div><span class="eyebrow">Payment design</span><h2 id="structures-title">2. Option ARM versus I-O amortizing and conventional mortgages</h2><p>The same principal can follow very different paths. The Option ARM simulation uses the Chapter 10 simplified minimum-payment rule and recasts at the selected year or when the negative-amortization cap is reached.</p></div><button class="action-button primary" id="animateMinRate" type="button">Animate minimum rate</button></div>
+      <div class="workspace-grid">
+        <div>
+          <div class="formula">Payment = interest + principal amortization<small>When payment is below interest, principal amortization is negative and the loan balance grows.</small></div>
+          <div class="controls">
+            <div class="control core"><label for="structLoan">Loan amount <output id="structLoanOut"></output></label><div class="control-row"><input id="structLoan" type="range" min="100000" max="600000" step="5000"><input id="structLoanNum" type="number" min="100000" max="600000" step="5000"></div></div>
+            <div class="control core"><label for="baseRate">FRM / I-O note rate <output id="baseRateOut"></output></label><div class="control-row"><input id="baseRate" type="range" min="3" max="10" step=".1"><input id="baseRateNum" type="number" min="3" max="10" step=".1"></div></div>
+            <div class="control"><label for="structTerm">Mortgage term <output id="structTermOut"></output></label><div class="control-row"><input id="structTerm" type="range" min="20" max="40" step="5"><input id="structTermNum" type="number" min="20" max="40" step="5"></div></div>
+            <div class="control"><label for="snapshotYear">Comparison year <output id="snapshotYearOut"></output></label><div class="control-row"><input id="snapshotYear" type="range" min="1" max="30" step="1"><input id="snapshotYearNum" type="number" min="1" max="30" step="1"></div></div>
+            <div class="control core"><label for="ioYears">I-O period <output id="ioYearsOut"></output></label><div class="control-row"><input id="ioYears" type="range" min="1" max="20" step="1"><input id="ioYearsNum" type="number" min="1" max="20" step="1"></div></div>
+          </div>
+          <details open><summary>Option ARM assumptions</summary><div class="controls">
+            <div class="control core"><label for="optionStrategy">Pre-recast payment choice</label><select id="optionStrategy"><option value="minimum">Minimum payment</option><option value="interest">Interest-only</option><option value="full">Fully amortizing</option></select></div>
+            <div class="control core"><label for="optionRate">Option ARM note rate <output id="optionRateOut"></output></label><div class="control-row"><input id="optionRate" type="range" min="3" max="11" step=".1"><input id="optionRateNum" type="number" min="3" max="11" step=".1"></div></div>
+            <div class="control core"><label for="minRate">Minimum-payment rate <output id="minRateOut"></output></label><div class="control-row"><input id="minRate" type="range" min=".5" max="5" step=".1"><input id="minRateNum" type="number" min=".5" max="5" step=".1"></div></div>
+            <div class="control"><label for="minGrowth">Annual payment increase <output id="minGrowthOut"></output></label><div class="control-row"><input id="minGrowth" type="range" min="0" max="12" step=".5"><input id="minGrowthNum" type="number" min="0" max="12" step=".5"></div></div>
+            <div class="control"><label for="recastYear">Scheduled recast <output id="recastYearOut"></output></label><div class="control-row"><input id="recastYear" type="range" min="2" max="10" step="1"><input id="recastYearNum" type="number" min="2" max="10" step="1"></div></div>
+            <div class="control"><label for="negCap">Balance cap <output id="negCapOut"></output></label><div class="control-row"><input id="negCap" type="range" min="105" max="140" step="1"><input id="negCapNum" type="number" min="105" max="140" step="1"></div></div>
+          </div></details>
+          <div class="actions"><button class="action-button" id="resetStructures" type="button">Reset Chapter 10 example</button></div>
+          <div class="metrics">
+            <div class="metric"><span class="metric-label">Conventional payment</span><span class="metric-value" id="frmPayment"></span><span class="metric-note">level monthly payment</span></div>
+            <div class="metric"><span class="metric-label">I-O payment change</span><span class="metric-value" id="ioShock"></span><span class="metric-note" id="ioShockNote"></span></div>
+            <div class="metric"><span class="metric-label">Option ARM recast</span><span class="metric-value" id="optionShock"></span><span class="metric-note" id="optionShockNote"></span></div>
+          </div>
+          <div class="decision warning" id="structureDecision"></div>
+          <div class="table-panel"><table><thead><tr><th>At comparison year</th><th>Conventional</th><th>I-O amortizing</th><th>Option ARM</th></tr></thead><tbody id="structureTable"></tbody></table></div>
+        </div>
+        <div class="visual-stack">
+          <div class="visual-panel"><div class="panel-header"><strong>Monthly payment path</strong><span>Year-end scheduled payment</span></div><div class="legend"><span class="legend-item"><span class="swatch" style="background:var(--blue)"></span>Conventional FRM</span><span class="legend-item"><span class="swatch" style="background:var(--green)"></span>I-O amortizing</span><span class="legend-item"><span class="swatch" style="background:var(--red)"></span>Option ARM</span></div><div class="chart-wrap"><svg id="paymentChart" viewBox="0 0 760 390" role="img" aria-label="Monthly payment paths for three mortgage structures"></svg></div><p class="chart-note">The I-O loan jumps when amortization begins. The minimum-payment Option ARM can jump earlier if its balance reaches the cap.</p></div>
+          <div class="visual-panel"><div class="panel-header"><strong>Outstanding loan balance</strong><span>Year-end balance</span></div><div class="legend"><span class="legend-item"><span class="swatch" style="background:var(--blue)"></span>Conventional FRM</span><span class="legend-item"><span class="swatch" style="background:var(--green)"></span>I-O amortizing</span><span class="legend-item"><span class="swatch" style="background:var(--red)"></span>Option ARM</span><span class="legend-item"><span class="swatch dashed" style="color:var(--gold)"></span>Original principal</span></div><div class="chart-wrap"><svg id="balanceChart" viewBox="0 0 760 390" role="img" aria-label="Outstanding balance paths for three mortgage structures"></svg></div><p class="chart-note">A balance above the original principal is negative amortization: unpaid interest has been added to principal.</p></div>
+        </div>
+      </div>
+    </div></section>
+
+    <section class="card" id="takeaways" aria-labelledby="takeaways-title"><div class="card-body"><div class="section-heading"><div><span class="eyebrow">Interpretation</span><h2 id="takeaways-title">Key takeaways</h2></div></div><div class="takeaways">
+      <div class="takeaway"><h3>Rate is not total cost</h3><p>A lower contract rate may be offset by higher fees. APR makes that tradeoff visible over the full term.</p></div>
+      <div class="takeaway"><h3>Time changes the ranking</h3><p>ECB matters when refinancing, selling, or otherwise paying off early. The shorter the horizon, the more heavily up-front charges weigh.</p></div>
+      <div class="takeaway"><h3>Low payment is not low cost</h3><p>Interest-only and minimum-payment designs delay principal repayment. An Option ARM may add unpaid interest to the balance and amplify the later recast.</p></div>
+    </div></div></section>
+    <aside class="disclaimer"><strong>Educational use only.</strong> This simplified tool illustrates concepts from FIN 351. It omits taxes, recurring mortgage insurance, changing ARM indexes and margins, caps, servicing rules, default risk, and transaction-specific disclosures. It is not financial, legal, lending, or investment advice.</aside>
+  </main>
+  <footer>Created by Desen Lin for FIN 351 at California State University, Fullerton.</footer>
+
+  <script>
+    'use strict';
+    const NS='http://www.w3.org/2000/svg';
+    const colors={navy:'#00274c',orange:'#f58220',blue:'#2878b5',red:'#c44235',green:'#16745b',gold:'#a76d00',purple:'#7652a5',grid:'#d8dee9',muted:'#5c677d',ink:'#172033'};
+    const defaults={costLoan:200000,holdingYear:5,costTerm:30,rateA:6.5,feesA:1.5,miA:1,rateB:6.25,feesB:4,miB:1,structLoan:200000,baseRate:6.5,structTerm:30,snapshotYear:5,ioYears:15,optionRate:6.5,minRate:1.5,minGrowth:7.5,recastYear:5,negCap:125};
+    const ids=Object.keys(defaults); const state={...defaults,optionStrategy:'minimum'}; let costTimer=null,structureTimer=null;
+    const money=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+    const money2=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+    const pct=x=>`${x.toFixed(2)}%`; const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
+    function payment(p,r,n){if(n<=0)return p;if(Math.abs(r)<1e-12)return p/n;return p*r/(1-Math.pow(1+r,-n))}
+    function balance(p,r,pmt,n){if(n<=0)return p;if(Math.abs(r)<1e-12)return Math.max(0,p-pmt*n);return Math.max(0,p*Math.pow(1+r,n)-pmt*(Math.pow(1+r,n)-1)/r)}
+    function solveCost(net,pmt,n,fv){
+      const f=r=>net-pmt*(Math.abs(r)<1e-12?n:(1-Math.pow(1+r,-n))/r)-fv*Math.pow(1+r,-n);
+      let lo=0,hi=.2,flo=f(lo),fhi=f(hi); if(Math.abs(flo)<1e-10)return 0;
+      while(flo*fhi>0&&hi<5){hi*=2;fhi=f(hi)} if(flo*fhi>0)return NaN;
+      for(let i=0;i<110;i++){const mid=(lo+hi)/2,fm=f(mid);if(flo*fm<=0){hi=mid;fhi=fm}else{lo=mid;flo=fm}}
+      return (lo+hi)/2*12*100;
+    }
+    function loanCost(principal,annual,termYears,fees,mi,holdYears){
+      const n=termYears*12,r=annual/1200,pmt=payment(principal,r,n),net=principal*(1-(fees+mi)/100);
+      const apr=solveCost(net,pmt,n,0); const months=Math.min(n,Math.round(holdYears*12)); const bal=balance(principal,r,pmt,months); const ecb=solveCost(net,pmt,months,bal);
+      return{pmt,net,apr,ecb,bal};
+    }
+    function bind(id,format){
+      const range=document.getElementById(id),num=document.getElementById(id+'Num'),out=document.getElementById(id+'Out');
+      const sync=(value,source)=>{let v=clamp(Number(value),Number(range.min),Number(range.max));if(!Number.isFinite(v))v=defaults[id];state[id]=v;range.value=v;num.value=v;if(out)out.textContent=format(v);renderAll()};
+      range.addEventListener('input',e=>sync(e.target.value,'range'));num.addEventListener('change',e=>sync(e.target.value,'number'));range.value=state[id];num.value=state[id];if(out)out.textContent=format(state[id]);
+    }
+    function el(name,attrs={}){const e=document.createElementNS(NS,name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e}
+    function svgText(svg,x,y,text,attrs={}){const t=el('text',{x,y,...attrs});t.textContent=text;svg.appendChild(t);return t}
+    function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=5?5:10)*p}
+    function lineChart(svgId,series,opts){
+      const svg=document.getElementById(svgId);svg.replaceChildren();const W=760,H=opts.height||390,m={l:72,r:24,t:22,b:55};const iw=W-m.l-m.r,ih=H-m.t-m.b;
+      let xMin=opts.xMin??0,xMax=opts.xMax,yMin=opts.yMin??0,yMax=opts.yMax??niceMax(Math.max(...series.flatMap(s=>s.data.map(d=>d.y)))*1.08);
+      if(yMax-yMin<1e-8)yMax=yMin+1;const X=x=>m.l+(x-xMin)/(xMax-xMin)*iw,Y=y=>m.t+ih-(y-yMin)/(yMax-yMin)*ih;
+      const plot=el('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'#fff'});svg.appendChild(plot);
+      for(let i=0;i<=5;i++){const y=yMin+(yMax-yMin)*i/5,py=Y(y);svg.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:py,y2:py,stroke:colors.grid,'stroke-width':1}));svgText(svg,m.l-10,py+4,opts.yFormat(y),{'text-anchor':'end',fill:colors.muted,'font-size':11})}
+      const xTicks=opts.xTicks||[xMin,(xMin+xMax)/2,xMax];for(const x of xTicks){const px=X(x);svg.appendChild(el('line',{x1:px,x2:px,y1:m.t+ih,y2:m.t+ih+6,stroke:colors.muted}));svgText(svg,px,m.t+ih+23,opts.xFormat?opts.xFormat(x):x,{'text-anchor':'middle',fill:colors.muted,'font-size':11})}
+      svg.appendChild(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:m.t+ih,stroke:colors.muted}));svg.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:colors.muted}));
+      if(opts.marker!==undefined){const px=X(opts.marker);svg.appendChild(el('line',{x1:px,x2:px,y1:m.t,y2:m.t+ih,stroke:colors.orange,'stroke-width':2,'stroke-dasharray':'5 5'}));svgText(svg,px,m.t+13,opts.markerLabel||'',{'text-anchor':'middle',fill:colors.orange,'font-size':11,'font-weight':800})}
+      for(const s of series){const d=s.data.filter(p=>Number.isFinite(p.y));if(!d.length)continue;const path=d.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(2)+' '+Y(p.y).toFixed(2)).join(' ');svg.appendChild(el('path',{d:path,fill:'none',stroke:s.color,'stroke-width':s.width||3,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':s.dash||''}));if(s.dot){for(const p of d){svg.appendChild(el('circle',{cx:X(p.x),cy:Y(p.y),r:4,fill:s.color,stroke:'#fff','stroke-width':2}))}}}
+      if(opts.yLabel){const t=svgText(svg,16,m.t+ih/2,opts.yLabel,{'text-anchor':'middle',fill:colors.muted,'font-size':11,'font-weight':700});t.setAttribute('transform',`rotate(-90 16 ${m.t+ih/2})`)}if(opts.xLabel)svgText(svg,m.l+iw/2,H-9,opts.xLabel,{'text-anchor':'middle',fill:colors.muted,'font-size':11,'font-weight':700});
+    }
+    function barChart(svgId,groups,yMax){
+      const svg=document.getElementById(svgId);svg.replaceChildren();const W=760,H=310,m={l:72,r:24,t:22,b:62},iw=W-m.l-m.r,ih=H-m.t-m.b,Y=y=>m.t+ih-y/yMax*ih;
+      for(let i=0;i<=5;i++){const y=yMax*i/5,py=Y(y);svg.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:py,y2:py,stroke:colors.grid}));svgText(svg,m.l-10,py+4,pct(y),{'text-anchor':'end',fill:colors.muted,'font-size':11})}
+      const bw=50,gap=26,groupW=bw*2+gap,space=(iw-groupW*groups.length)/(groups.length+1);groups.forEach((g,i)=>{const start=m.l+space*(i+1)+groupW*i;g.values.forEach((v,j)=>{const x=start+j*(bw+gap),y=Y(v.value);svg.appendChild(el('rect',{x,y,width:bw,height:m.t+ih-y,rx:5,fill:v.color}));svgText(svg,x+bw/2,y-7,pct(v.value),{'text-anchor':'middle',fill:v.color,'font-size':11,'font-weight':800});svgText(svg,x+bw/2,m.t+ih+18,v.label,{'text-anchor':'middle',fill:colors.muted,'font-size':10})});svgText(svg,start+groupW/2-gap/2,H-12,g.name,{'text-anchor':'middle',fill:colors.navy,'font-size':12,'font-weight':800})});
+      svg.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:colors.muted}));
+    }
+    function renderCost(){
+      state.holdingYear=Math.min(state.holdingYear,state.costTerm);document.getElementById('holdingYear').max=state.costTerm;document.getElementById('holdingYearNum').max=state.costTerm;document.getElementById('holdingYear').value=state.holdingYear;document.getElementById('holdingYearNum').value=state.holdingYear;document.getElementById('holdingYearOut').textContent=`Year ${state.holdingYear}`;
+      const A=loanCost(state.costLoan,state.rateA,state.costTerm,state.feesA,state.miA,state.holdingYear),B=loanCost(state.costLoan,state.rateB,state.costTerm,state.feesB,state.miB,state.holdingYear);
+      document.getElementById('costMetricA').textContent=`APR ${pct(A.apr)}`;document.getElementById('costMetricANote').textContent=`ECB ${pct(A.ecb)} · payment ${money2.format(A.pmt)}`;
+      document.getElementById('costMetricB').textContent=`APR ${pct(B.apr)}`;document.getElementById('costMetricBNote').textContent=`ECB ${pct(B.ecb)} · payment ${money2.format(B.pmt)}`;
+      const winner=A.ecb<B.ecb?'Loan A':B.ecb<A.ecb?'Loan B':'Tie',diff=Math.abs(A.ecb-B.ecb);document.getElementById('costWinner').textContent=winner;document.getElementById('costWinnerNote').textContent=diff<.005?'Costs are effectively equal':`${diff.toFixed(2)} percentage-point advantage`;
+      const aprWinner=A.apr<B.apr?'Loan A':B.apr<A.apr?'Loan B':'Neither loan';document.getElementById('costDecision').innerHTML=`<strong>Interpretation.</strong> Over the full term, ${esc(aprWinner)} has the lower APR. At a year-${state.holdingYear} payoff, <strong>${esc(winner)}</strong> has the lower ECB. Loan A delivers ${money.format(A.net)} net proceeds and leaves ${money.format(A.bal)} due; Loan B delivers ${money.format(B.net)} and leaves ${money.format(B.bal)} due.`;
+      const years=Array.from({length:state.costTerm},(_,i)=>i+1),aCurve=years.map(y=>({x:y,y:loanCost(state.costLoan,state.rateA,state.costTerm,state.feesA,state.miA,y).ecb})),bCurve=years.map(y=>({x:y,y:loanCost(state.costLoan,state.rateB,state.costTerm,state.feesB,state.miB,y).ecb}));
+      const vals=[...aCurve,...bCurve].map(d=>d.y),yMin=Math.max(0,Math.floor((Math.min(...vals,A.apr,B.apr)-.3)*2)/2),yMax=Math.ceil((Math.max(...vals,A.apr,B.apr)+.3)*2)/2;
+      lineChart('costCurve',[{data:aCurve,color:colors.blue},{data:bCurve,color:colors.red},{data:[{x:1,y:A.apr},{x:state.costTerm,y:A.apr}],color:colors.blue,dash:'7 6',width:2},{data:[{x:1,y:B.apr},{x:state.costTerm,y:B.apr}],color:colors.red,dash:'7 6',width:2}],{xMin:1,xMax:state.costTerm,yMin,yMax,yFormat:pct,xTicks:[1,Math.round(state.costTerm/2),state.costTerm],xFormat:x=>`Year ${x}`,xLabel:'Payoff year',yLabel:'Annualized borrowing cost',marker:state.holdingYear,markerLabel:`Year ${state.holdingYear}`});
+      const barMax=Math.ceil(Math.max(state.rateA,state.rateB,A.apr,B.apr,A.ecb,B.ecb)*1.18);barChart('costBars',[{name:'Contract rate',values:[{label:'Loan A',value:state.rateA,color:colors.blue},{label:'Loan B',value:state.rateB,color:colors.red}]},{name:'APR',values:[{label:'Loan A',value:A.apr,color:colors.blue},{label:'Loan B',value:B.apr,color:colors.red}]},{name:`ECB · year ${state.holdingYear}`,values:[{label:'Loan A',value:A.ecb,color:colors.blue},{label:'Loan B',value:B.ecb,color:colors.red}]}],barMax);
+    }
+    function simulateFRM(P,annual,years){const n=years*12,r=annual/1200,p=payment(P,r,n),rows=[{month:0,payment:0,interest:0,balance:P,cumPayment:0,cumInterest:0}];let bal=P,cp=0,ci=0;for(let m=1;m<=n;m++){const interest=bal*r,pay=Math.min(p,bal+interest);bal=Math.max(0,bal+interest-pay);cp+=pay;ci+=interest;rows.push({month:m,payment:pay,interest,balance:bal,cumPayment:cp,cumInterest:ci})}return{rows,initial:p,transition:p,transitionMonth:1}}
+    function simulateIO(P,annual,years,ioYears){const n=years*12,r=annual/1200,cut=Math.min(ioYears*12,n-1),rows=[{month:0,payment:0,interest:0,balance:P,cumPayment:0,cumInterest:0}];let bal=P,cp=0,ci=0,amortPmt=null;for(let m=1;m<=n;m++){const interest=bal*r;if(m===cut+1)amortPmt=payment(bal,r,n-cut);const scheduled=m<=cut?interest:amortPmt;const pay=Math.min(scheduled,bal+interest);bal=Math.max(0,bal+interest-pay);cp+=pay;ci+=interest;rows.push({month:m,payment:pay,interest,balance:bal,cumPayment:cp,cumInterest:ci})}return{rows,initial:P*r,transition:amortPmt,transitionMonth:cut+1}}
+    function simulateOption(P,annual,years,strategy,minAnnual,growth,recastYears,capPct){
+      const n=years*12,r=annual/1200,scheduledRecast=Math.min(recastYears*12,n-1),cap=P*capPct/100,full=payment(P,r,n);let bal=P,cp=0,ci=0,recastPmt=null,triggerMonth=null,lastPre=null;const rows=[{month:0,payment:0,interest:0,balance:P,cumPayment:0,cumInterest:0}];
+      for(let m=1;m<=n;m++){
+        if(recastPmt===null&&triggerMonth!==null&&m===triggerMonth+1)recastPmt=payment(bal,r,n-m+1);
+        const interest=bal*r;let scheduled;
+        if(recastPmt!==null)scheduled=recastPmt;else if(strategy==='interest')scheduled=interest;else if(strategy==='full')scheduled=full;else scheduled=P*(minAnnual/1200)*Math.pow(1+growth/100,Math.floor((m-1)/12));
+        const pay=Math.min(scheduled,bal+interest);bal=Math.max(0,bal+interest-pay);cp+=pay;ci+=interest;rows.push({month:m,payment:pay,interest,balance:bal,cumPayment:cp,cumInterest:ci});
+        if(recastPmt===null&&strategy!=='full'&&(m>=scheduledRecast||bal>=cap)){triggerMonth=m;lastPre=pay}
+      }
+      const first=rows[1].payment;return{rows,initial:first,transition:recastPmt??full,transitionMonth:triggerMonth===null?1:triggerMonth+1,lastPre:lastPre??first,triggerReason:triggerMonth!==null&&rows[triggerMonth].balance>=cap?'balance cap':'scheduled recast'};
+    }
+    function yearly(rows,years,key){const out=[];for(let y=1;y<=years;y++){const row=rows[Math.min(y*12,rows.length-1)];out.push({x:y,y:row[key]})}return out}
+    function renderStructures(){
+      state.snapshotYear=Math.min(state.snapshotYear,state.structTerm);state.ioYears=Math.min(state.ioYears,state.structTerm-1);state.recastYear=Math.min(state.recastYear,state.structTerm-1);
+      for(const[id,val,label]of [['snapshotYear',state.snapshotYear,`Year ${state.snapshotYear}`],['ioYears',state.ioYears,`${state.ioYears} years`],['recastYear',state.recastYear,`Year ${state.recastYear}`]]){document.getElementById(id).value=val;document.getElementById(id+'Num').value=val;document.getElementById(id+'Out').textContent=label}
+      const frm=simulateFRM(state.structLoan,state.baseRate,state.structTerm),io=simulateIO(state.structLoan,state.baseRate,state.structTerm,state.ioYears),opt=simulateOption(state.structLoan,state.optionRate,state.structTerm,state.optionStrategy,state.minRate,state.minGrowth,state.recastYear,state.negCap);
+      document.getElementById('frmPayment').textContent=money2.format(frm.initial);const ioPct=(io.transition/io.initial-1)*100;document.getElementById('ioShock').textContent=`${ioPct.toFixed(1)}%`;document.getElementById('ioShockNote').textContent=`${money2.format(io.initial)} → ${money2.format(io.transition)} in year ${state.ioYears+1}`;
+      const optionPct=(opt.transition/opt.lastPre-1)*100;document.getElementById('optionShock').textContent=state.optionStrategy==='full'?'No recast':`${optionPct.toFixed(1)}%`;document.getElementById('optionShockNote').textContent=state.optionStrategy==='full'?`Payment remains ${money2.format(opt.initial)}`:`${money2.format(opt.lastPre)} → ${money2.format(opt.transition)} after ${opt.triggerReason}`;
+      const idx=Math.min(state.snapshotYear*12,state.structTerm*12),fr=frm.rows[idx],ir=io.rows[idx],or=opt.rows[idx];
+      const rows=[['Monthly payment',fr.payment,ir.payment,or.payment,money2],['Cumulative payments',fr.cumPayment,ir.cumPayment,or.cumPayment,money],['Cumulative interest',fr.cumInterest,ir.cumInterest,or.cumInterest,money],['Remaining balance',fr.balance,ir.balance,or.balance,money]];document.getElementById('structureTable').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[4].format(r[1])}</td><td>${r[4].format(r[2])}</td><td>${r[4].format(r[3])}</td></tr>`).join('');
+      const negPeak=Math.max(...opt.rows.map(r=>r.balance)),negAm=Math.max(0,negPeak-state.structLoan);document.getElementById('structureDecision').innerHTML=negAm>1?`<strong>Negative amortization occurs.</strong> The Option ARM balance peaks at ${money.format(negPeak)}, or ${pct((negPeak/state.structLoan-1)*100)} above the original principal, before amortization catches up. Lowering the minimum-payment rate or delaying recast increases this exposure.`:`<strong>No negative amortization under these settings.</strong> The selected Option ARM payment choice covers accrued interest. Compare the remaining balance and cumulative interest to see whether principal is being delayed.`;
+      const paymentSeries=[{data:yearly(frm.rows,state.structTerm,'payment'),color:colors.blue},{data:yearly(io.rows,state.structTerm,'payment'),color:colors.green},{data:yearly(opt.rows,state.structTerm,'payment'),color:colors.red}];const maxPay=Math.max(...paymentSeries.flatMap(s=>s.data.map(d=>d.y)));lineChart('paymentChart',paymentSeries,{xMin:1,xMax:state.structTerm,yMin:0,yMax:niceMax(maxPay*1.08),yFormat:v=>money.format(v),xTicks:[1,Math.round(state.structTerm/2),state.structTerm],xFormat:x=>`Year ${x}`,xLabel:'Loan year',yLabel:'Monthly payment',marker:state.snapshotYear,markerLabel:`Year ${state.snapshotYear}`});
+      const balanceSeries=[{data:yearly(frm.rows,state.structTerm,'balance'),color:colors.blue},{data:yearly(io.rows,state.structTerm,'balance'),color:colors.green},{data:yearly(opt.rows,state.structTerm,'balance'),color:colors.red},{data:[{x:1,y:state.structLoan},{x:state.structTerm,y:state.structLoan}],color:colors.gold,dash:'7 6',width:2}];const maxBal=Math.max(...balanceSeries.flatMap(s=>s.data.map(d=>d.y)));lineChart('balanceChart',balanceSeries,{xMin:1,xMax:state.structTerm,yMin:0,yMax:niceMax(maxBal*1.06),yFormat:v=>money.format(v),xTicks:[1,Math.round(state.structTerm/2),state.structTerm],xFormat:x=>`Year ${x}`,xLabel:'Loan year',yLabel:'Outstanding balance',marker:state.snapshotYear,markerLabel:`Year ${state.snapshotYear}`});
+    }
+    function renderAll(){renderCost();renderStructures()}
+    const formats={costLoan:money.format,holdingYear:v=>`Year ${v}`,costTerm:v=>`${v} years`,rateA:pct,feesA:pct,miA:pct,rateB:pct,feesB:pct,miB:pct,structLoan:money.format,baseRate:pct,structTerm:v=>`${v} years`,snapshotYear:v=>`Year ${v}`,ioYears:v=>`${v} years`,optionRate:pct,minRate:pct,minGrowth:pct,recastYear:v=>`Year ${v}`,negCap:v=>`${v}%`};ids.forEach(id=>bind(id,formats[id]));
+    document.getElementById('optionStrategy').addEventListener('change',e=>{state.optionStrategy=e.target.value;renderStructures()});
+    function reset(group){for(const id of group){state[id]=defaults[id];const r=document.getElementById(id),n=document.getElementById(id+'Num'),o=document.getElementById(id+'Out');r.value=state[id];n.value=state[id];if(o)o.textContent=formats[id](state[id])}renderAll()}
+    document.getElementById('resetCost').addEventListener('click',()=>reset(['costLoan','holdingYear','costTerm','rateA','feesA','miA','rateB','feesB','miB']));document.getElementById('resetStructures').addEventListener('click',()=>{reset(['structLoan','baseRate','structTerm','snapshotYear','ioYears','optionRate','minRate','minGrowth','recastYear','negCap']);state.optionStrategy='minimum';document.getElementById('optionStrategy').value='minimum';renderStructures()});
+    function animate(button,key,min,max,step,timerName){let timer=timerName==='cost'?costTimer:structureTimer;if(timer){clearInterval(timer);if(timerName==='cost')costTimer=null;else structureTimer=null;button.textContent=button.dataset.label;return}button.dataset.label=button.textContent;button.textContent='Pause animation';let dir=1;timer=setInterval(()=>{let v=state[key]+step*dir;if(v>=max||v<=min){v=clamp(v,min,max);dir*=-1}state[key]=v;const r=document.getElementById(key),n=document.getElementById(key+'Num'),o=document.getElementById(key+'Out');r.value=v;n.value=Number(v.toFixed(2));if(o)o.textContent=formats[key](v);renderAll()},650);if(timerName==='cost')costTimer=timer;else structureTimer=timer}
+    document.getElementById('animateHolding').addEventListener('click',e=>animate(e.currentTarget,'holdingYear',1,state.costTerm,1,'cost'));document.getElementById('animateMinRate').addEventListener('click',e=>animate(e.currentTarget,'minRate',.5,5,.25,'structure'));
+    renderAll();
+  </script>
+</body>
+</html>
