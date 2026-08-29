@@ -31,6 +31,11 @@ This repository hosts browser-based interactive tools developed for **FIN 351: R
       <td>Shows how contract rates, up-front charges, and payoff timing change APR and effective borrowing cost, then compares the payment and balance paths of a conventional fixed-rate mortgage, an interest-only amortizing mortgage, and an Option ARM.</td>
       <td><a href="https://desenlin.com/FIN351/mortgage-choice.html">Launch the tool</a></td>
     </tr>
+    <tr>
+      <td><strong>Commercial Mortgage Leverage and Refinancing</strong></td>
+      <td>Compares conventional and mezzanine-debt capital structures, shows how leverage changes required equity and equity return, and evaluates refinancing using payment savings, transaction costs, NPV, IRR, and break-even conditions.</td>
+      <td><a href="https://desenlin.com/FIN351/commercial-mortgage.html">Launch the tool</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -47,7 +52,7 @@ All calculations run within the browser. The tools do not collect or transmit st
 
 ## Educational Scope
 
-The examples intentionally simplify urban structure, commuting, production, development, and mortgage contracts so students can focus on the underlying economic and financial mechanisms. The results are instructional illustrations rather than estimates for an actual property, market, loan, or decision.
+The examples intentionally simplify urban structure, commuting, production, development, mortgage contracts, capital structures, and refinancing decisions so students can focus on the underlying economic and financial mechanisms. The results are instructional illustrations rather than estimates for an actual property, market, loan, or decision.
 
 ---
 
