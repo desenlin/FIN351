@@ -54,6 +54,18 @@ All calculations run within the browser. The tools do not collect or transmit st
 
 The examples intentionally simplify urban structure, commuting, production, development, mortgage contracts, capital structures, and refinancing decisions so students can focus on the underlying economic and financial mechanisms. The results are instructional illustrations rather than estimates for an actual property, market, loan, or decision.
 
+
+## Reuse, Attribution, and Licensing
+
+Responsible reuse and adaptation are encouraged with attribution:
+
+- Original HTML, CSS, and JavaScript code is licensed under the [MIT License](LICENSE-CODE.md).
+- Original educational text, examples, tables, diagrams, and visualizations are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE-CONTENT.md), unless otherwise noted.
+- Suggested attribution: **FIN 351: Real Estate Principles Interactive Learning Resources by Desen Lin, California State University, Fullerton**, with a link to https://github.com/desenlin/FIN351.
+- Citation metadata is provided in [CITATION.cff](CITATION.cff), which enables GitHub's **Cite this repository** feature.
+
+The licenses apply only to material for which Desen Lin holds the necessary rights. CSUF and CSU names, logos, and trademarks, as well as third-party libraries, fonts, icons, images, data, publications, and other externally owned materials, are excluded and remain subject to their respective terms. Attribution does not imply institutional endorsement.
+
 ---
 
 <p align="center"><strong>Created by <a href="https://desenlin.com/">Desen Lin</a></strong> for instructional purposes in FIN 351 at California State University, Fullerton.</p>
