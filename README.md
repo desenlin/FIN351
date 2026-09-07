@@ -55,6 +55,15 @@ All calculations run within the browser. The tools do not collect or transmit st
 The examples intentionally simplify urban structure, commuting, production, development, mortgage contracts, capital structures, and refinancing decisions so students can focus on the underlying economic and financial mechanisms. The results are instructional illustrations rather than estimates for an actual property, market, loan, or decision.
 
 
+## Citation
+
+If you use or adapt this collection, please cite it as:
+
+> Lin, D. (2026). *FIN 351: Real Estate Principles Interactive Learning Resources* [Computer software]. GitHub. https://github.com/desenlin/FIN351
+
+GitHub also provides formatted citation options through **Cite this repository**, based on the repository's [CITATION.cff](CITATION.cff) metadata.
+
+
 ## Reuse, Attribution, and Licensing
 
 Responsible reuse and adaptation are encouraged with attribution:
